@@ -29,6 +29,13 @@ class Calculator {
     return parseFloat(n1) - parseFloat(n2);
   }
 
+  multiplication(n1, n2) {
+    return parseFloat(n1) * parseFloat(n2);
+  }
+  division(n1, n2) {
+    return parseFloat(n1) / parseFloat(n2);
+  }
+
   //divisão
 
   //atualiza valores
@@ -38,19 +45,53 @@ class Calculator {
   }
   //resolve a operação
   resolution() {
+    console.log("oi!");
     //explore uma string em um array
     let upperValueArray = this.upperValue.textContent.split(" ");
 
     //Resultado da operação
     let result = 0;
 
-    for (let i = 0; i < upperValueArray.length; i++) {
+    for (let i = 0; i <= upperValueArray.length; i++) {
+      let operation = 0;
       let actualItem = upperValueArray[i];
 
-      if (actualItem == "+") {
-        result =
-          parseFloat(upperValueArray[i - 1]) +
-          parseFloat(upperValueArray[i + 1]);
+      //faz multiplicação
+      if (actualItem == "X") {
+        result = calc.multiplication(
+          upperValueArray[i - 1],
+          upperValueArray[i + 1]
+        );
+        operation = 1;
+        //faz divisão
+      } else if (actualItem == "/") {
+        result = calc.division(upperValueArray[i - 1], upperValueArray[i + 1]);
+        operation = 1;
+        //checa se ainda tem multiplicação e divisão a ser feita
+      } else if (
+        !upperValueArray.includes("X") &&
+        !upperValueArray.includes("/")
+      ) {
+        //Soma e subtração
+        if (actualItem == "+") {
+          result = calc.sum(upperValueArray[i - 1], upperValueArray[i + 1]);
+          operation = 1;
+        } else if (actualItem == "-") {
+          result = calc.subtraction(
+            upperValueArray[i - 1],
+            upperValueArray[i + 1]
+          );
+          operation = 1;
+        }
+      }
+      //Atualiza valores do array para próxima interação
+      if (operation) {
+        //indioce antertior no resultado da operacao
+        upperValueArray[i - 1] = result;
+        //remove os itens já utlizado para a operacao
+        upperValueArray.splice(i, 2);
+        //atualizar o valor do índice
+        i = 0;
       }
     }
 
@@ -58,7 +99,7 @@ class Calculator {
       calc.reset = 1;
     }
 
-    //Atualiza os totais
+    //atualiza o total
     calc.refreshValues(result);
   }
 
@@ -93,7 +134,9 @@ class Calculator {
       }
 
       if (upperValue == "0") {
-        calc.upperValue.textContent = input;
+        if (reg.test(input)) {
+          calc.upperValue.textContent = input;
+        }
       } else {
         calc.upperValue.textContent += input;
       }
